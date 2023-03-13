@@ -91,4 +91,15 @@ export class SeguridadUsuarioService {
     let token = jwt.sign(datos, configuracionSeguridad.claveJWT);
     return token;
   }
+
+  /**
+   * valida y obtiene el rol de un token
+   * @param tk el token
+   * @returns el _id de un rol
+   */
+  obtenerRolDesdeToken(tk: string): string {
+    let obj = jwt.verify(tk, configuracionSeguridad.claveJWT);
+    return obj.role;
+  }
+
 }

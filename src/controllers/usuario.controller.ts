@@ -13,6 +13,7 @@ import {
   getModelSchemaRef, HttpErrors, param, patch, post, put, requestBody,
   response
 } from '@loopback/rest';
+import {configuracionSeguridad} from '../config/seguridad.config';
 import {Credenciales, FactorDeAutenficacionPorCodigo, Login, Usuario} from '../models';
 import {LoginRepository, UsuarioRepository} from '../repositories';
 import {SeguridadUsuarioService} from '../services';
@@ -68,7 +69,10 @@ export class UsuarioController {
     return this.usuarioRepository.count(where);
   }
 
-  @authenticate("auth")
+  @authenticate({
+    strategy: "auth",
+    options: [configuracionSeguridad.menuUsuarioId, configuracionSeguridad.listarAccion]
+  })
   @get('/usuario')
   @response(200, {
     description: 'Array of Usuario model instances',
