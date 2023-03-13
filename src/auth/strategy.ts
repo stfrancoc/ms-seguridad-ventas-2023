@@ -1,15 +1,12 @@
-import {AuthenticationBindings, AuthenticationStrategy} from '@loopback/authentication';
-import {AuthenticationMetadata} from '@loopback/authentication/dist/types';
-import {service} from '@loopback/core';
+import {AuthenticationBindings, AuthenticationMetadata, AuthenticationStrategy} from '@loopback/authentication';
+import {inject, service} from '@loopback/core';
 import {repository} from '@loopback/repository';
 import {HttpErrors} from '@loopback/rest';
 import {Request} from '@loopback/rest/dist/types';
 import {UserProfile} from '@loopback/security';
-import {inject} from '@loopback/testlab';
 import parseBearerToken from 'parse-bearer-token';
 import {RolMenuRepository} from '../repositories';
 import {SeguridadUsuarioService} from '../services';
-
 
 export class AuthStrategy implements AuthenticationStrategy {
   name: string = 'auth';
@@ -18,7 +15,7 @@ export class AuthStrategy implements AuthenticationStrategy {
     @service(SeguridadUsuarioService)
     private servcioSeguridad: SeguridadUsuarioService,
     @inject(AuthenticationBindings.METADATA)
-    private metadata: AuthenticationMetadata,
+    private metadata: AuthenticationMetadata[],
     @repository(RolMenuRepository)
     private repositorioRolMenu: RolMenuRepository
 
@@ -33,9 +30,8 @@ export class AuthStrategy implements AuthenticationStrategy {
     let token = parseBearerToken(request);
     if (token) {
       let idRol = this.servcioSeguridad.obtenerRolDesdeToken(token);
-      let idMenu: string = this.metadata.options![0];
-      let accion: string = this.metadata.options![1];
-
+      let idMenu: string = this.metadata[0].options![0];
+      let accion: string = this.metadata[0].options![1];
 
       let permiso = await this.repositorioRolMenu.findOne({
         where: {
